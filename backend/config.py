@@ -3,6 +3,7 @@
 環境変数と定数を一元管理する
 """
 import os
+from typing import List
 from pathlib import Path
 from dataclasses import dataclass, field
 from dotenv import load_dotenv
@@ -34,6 +35,7 @@ class AppConfig:
     # API 設定
     api_host: str = "0.0.0.0"
     api_port: int = 8000
+    allowed_origins: List[str] = field(default_factory=lambda: ["http://localhost:3000"])
 
     # リトライ設定
     max_retries: int = 3
@@ -56,6 +58,7 @@ class AppConfig:
             sources_file=os.getenv("SOURCES_FILE", "sources.json"),
             api_host=os.getenv("API_HOST", "0.0.0.0"),
             api_port=int(os.getenv("API_PORT", "8000")),
+            allowed_origins=[origin.strip() for origin in os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")],
             max_retries=int(os.getenv("MAX_RETRIES", "3")),
             retry_wait_seconds=int(os.getenv("RETRY_WAIT_SECONDS", "2")),
             max_content_chars=int(os.getenv("MAX_CONTENT_CHARS", "10000")),
