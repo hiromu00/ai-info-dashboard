@@ -1,0 +1,54 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend:/app
+      - ./data:/app/data
+      - ./secrets:/app/secrets:ro
+    environment:
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
+      - GCP_LOCATION=${GCP_LOCATION}
+      - GEMINI_MODEL=${GEMINI_MODEL}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/secrets/vertex-ai-key.json
+      - RUN_MODE=daemon
+    ports:
+      - "8000:8000"
+    restart: always
+    working_dir: /app
+    command: python main.py
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - ai-dashboard-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+      - ./data:/app/public/data
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    working_dir: /app
+    command: npm run dev
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - ai-dashboard-net
+
+volumes:
+  data:
+
+
+networks:
+  ai-dashboard-net:
+    driver: bridge

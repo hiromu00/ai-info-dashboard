@@ -1,0 +1,10 @@
+crawl4ai
+google-cloud-aiplatform
+feedparser
+schedule
+pydantic
+pydantic-settings
+python-dotenv
+fastapi
+uvicorn[standard]
+tenacity

@@ -1,0 +1,53 @@
+{
+    "primary": [
+        {
+            "type": "rss",
+            "url": "http://arxiv.org/rss/cs.AI",
+            "name": "arXiv (cs.AI)"
+        },
+        {
+            "type": "rss",
+            "url": "https://deepmind.google/blog/rss.xml",
+            "name": "Google DeepMind"
+        },
+        {
+            "type": "rss",
+            "url": "https://openai.com/news/rss.xml",
+            "name": "OpenAI"
+        },
+        {
+            "type": "rss",
+            "url": "https://aws.amazon.com/blogs/machine-learning/feed/",
+            "name": "AWS Machine Learning"
+        },
+        {
+            "type": "web",
+            "url": "https://www.anthropic.com/news",
+            "name": "Anthropic"
+        }
+    ],
+    "community": [
+        {
+            "type": "web",
+            "url": "https://huggingface.co/blog",
+            "name": "Hugging Face Blog"
+        },
+        {
+            "type": "rss",
+            "url": "https://www.reddit.com/r/LocalLLaMA/top/.rss?t=day",
+            "name": "Reddit (LocalLLaMA)"
+        },
+        {
+            "type": "rss",
+            "url": "https://news.ycombinator.com/rss",
+            "name": "Hacker News"
+        }
+    ],
+    "business": [
+        {
+            "type": "web",
+            "url": "https://bensbites.com/",
+            "name": "Ben's Bites"
+        }
+    ]
+}
