@@ -6,12 +6,9 @@ services:
     volumes:
       - ./backend:/app
       - ./data:/app/data
-      - ./secrets:/app/secrets:ro
     environment:
-      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
-      - GCP_LOCATION=${GCP_LOCATION}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
       - GEMINI_MODEL=${GEMINI_MODEL}
-      - GOOGLE_APPLICATION_CREDENTIALS=/app/secrets/vertex-ai-key.json
       - RUN_MODE=daemon
     ports:
       - "8000:8000"

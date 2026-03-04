@@ -5,8 +5,8 @@ Vertex AI (Gemini) を使用してコンテンツをエンジニア向けに要�
 import os
 import time
 import logging
-import vertexai
-from vertexai.generative_models import GenerativeModel
+import logging
+from google import genai
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 from config import config
 
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class Summarizer:
-    """Vertex AI (Gemini) を使ってコンテンツを要約するクラス"""
+    """Google AI Studio (Gemini API) を使ってコンテンツを要約するクラス"""
 
     # 要約プロンプトテンプレート
     PROMPT_TEMPLATE = """あなたは優秀なシニアソフトウェアエンジニアです。
@@ -41,16 +41,13 @@ class Summarizer:
 - 概要"""
 
     def __init__(self):
-        if not config.gcp_project_id:
-            raise ValueError("GCP_PROJECT_ID 環境変数が未設定です")
+        if not config.gemini_api_key:
+            raise ValueError("GEMINI_API_KEY 環境変数が未設定です。Google AI Studioでキーを取得してください")
 
-        vertexai.init(
-            project=config.gcp_project_id,
-            location=config.gcp_location,
-        )
-        logger.info(f"Vertex AI 初期化完了: project={config.gcp_project_id}, location={config.gcp_location}")
-        logger.info(f"Gemini モデル: {config.gemini_model}")
-        self.model = GenerativeModel(config.gemini_model)
+        self.client = genai.Client(api_key=config.gemini_api_key)
+        self.model_name = config.gemini_model
+
+        logger.info(f"Google AI Studio 初期化完了: モデル={self.model_name}")
         self._request_count = 0
         self._last_request_time = 0.0
 
@@ -89,7 +86,10 @@ class Summarizer:
             API レスポンスのテキスト
         """
         self._rate_limit()
-        response = self.model.generate_content(prompt)
+        response = self.client.models.generate_content(
+            model=self.model_name,
+            contents=prompt,
+        )
         return response.text
 
     def summarize_content(self, content: str, title: str = "") -> str:

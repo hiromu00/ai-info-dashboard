@@ -17,10 +17,9 @@ load_dotenv(_env_path)
 class AppConfig:
     """アプリケーション設定"""
 
-    # Vertex AI / Gemini 設定
-    gcp_project_id: str = ""
-    gcp_location: str = "us-central1"
-    gemini_model: str = "gemini-1.5-flash"
+    # Google AI Studio / Gemini 設定
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-2.5-flash"
 
     # パイプライン設定
     run_mode: str = "oneshot"  # "oneshot" or "daemon"
@@ -48,9 +47,8 @@ class AppConfig:
     def from_env(cls) -> "AppConfig":
         """環境変数から設定を読み込む"""
         return cls(
-            gcp_project_id=os.getenv("GCP_PROJECT_ID", ""),
-            gcp_location=os.getenv("GCP_LOCATION", "us-central1"),
-            gemini_model=os.getenv("GEMINI_MODEL", "gemini-1.5-flash"),
+            gemini_api_key=os.getenv("GEMINI_API_KEY", ""),
+            gemini_model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
             run_mode=os.getenv("RUN_MODE", "oneshot"),
             schedule_interval_hours=int(os.getenv("SCHEDULE_INTERVAL_HOURS", "6")),
             rss_max_entries=int(os.getenv("RSS_MAX_ENTRIES", "5")),
