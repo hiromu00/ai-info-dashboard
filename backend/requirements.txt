@@ -1,5 +1,5 @@
 crawl4ai
-google-cloud-aiplatform
+google-genai
 feedparser
 schedule
 pydantic
