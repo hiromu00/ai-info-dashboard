@@ -6,7 +6,6 @@ import os
 from typing import Optional
 from fastapi import APIRouter, Query, Request
 
-from config import config
 from models import HealthResponse
 
 router = APIRouter()
