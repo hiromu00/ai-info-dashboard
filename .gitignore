@@ -7,6 +7,7 @@ backend/.venv/
 # 環境変数・シークレット
 .env
 backend/.env
+frontend/.env.local
 secrets/
 
 # ログ
@@ -23,3 +24,4 @@ build/
 
 # データ
 data/
+backend/data/

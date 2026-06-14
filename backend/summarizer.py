@@ -13,6 +13,12 @@ from config import config
 logger = logging.getLogger(__name__)
 
 
+# API レート制限の設定
+RATE_LIMIT_INTERVAL_SEC = 1.0
+RATE_LIMIT_BATCH_SIZE = 10
+RATE_LIMIT_BATCH_WAIT_SEC = 5.0
+
+
 class Summarizer:
     """Google AI Studio (Gemini API) を使ってコンテンツを要約するクラス"""
 
@@ -51,22 +57,27 @@ class Summarizer:
         self._request_count = 0
         self._last_request_time = 0.0
 
+        # 連続エラーによる一時無効化のためのカウンター
+        self._consecutive_failures = 0
+        self._max_consecutive_failures = 3
+        self.disabled = False
+
     def _rate_limit(self):
         """API レート制限を考慮した待機処理"""
         self._request_count += 1
         now = time.time()
         elapsed = now - self._last_request_time
 
-        # 1秒以内の連続リクエストを防止
-        if elapsed < 1.0:
-            wait_time = 1.0 - elapsed
+        # 連続リクエストを防止
+        if elapsed < RATE_LIMIT_INTERVAL_SEC:
+            wait_time = RATE_LIMIT_INTERVAL_SEC - elapsed
             logger.debug(f"レート制限: {wait_time:.1f}秒待機")
             time.sleep(wait_time)
 
-        # 10リクエストごとに追加待機（無料枠対応）
-        if self._request_count % 10 == 0:
-            logger.info("レート制限: 10リクエスト到達、5秒待機")
-            time.sleep(5)
+        # 一定リクエストごとに追加待機（無料枠対応）
+        if self._request_count % RATE_LIMIT_BATCH_SIZE == 0:
+            logger.info(f"レート制限: {RATE_LIMIT_BATCH_SIZE}リクエスト到達、{RATE_LIMIT_BATCH_WAIT_SEC}秒待機")
+            time.sleep(RATE_LIMIT_BATCH_WAIT_SEC)
 
         self._last_request_time = time.time()
 

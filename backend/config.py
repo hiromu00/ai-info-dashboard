@@ -19,7 +19,7 @@ class AppConfig:
 
     # Google AI Studio / Gemini 設定
     gemini_api_key: str = ""
-    gemini_model: str = "gemini-2.5-flash"
+    gemini_model: str = "gemini-3.1-flash-lite"
 
     # パイプライン設定
     run_mode: str = "oneshot"  # "oneshot" or "daemon"
@@ -42,13 +42,15 @@ class AppConfig:
 
     # 要約設定
     max_content_chars: int = 10000
+    max_news_items: int = 1000
+    min_web_content_chars: int = 500
 
     @classmethod
     def from_env(cls) -> "AppConfig":
         """環境変数から設定を読み込む"""
         return cls(
             gemini_api_key=os.getenv("GEMINI_API_KEY", ""),
-            gemini_model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
+            gemini_model=os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite"),
             run_mode=os.getenv("RUN_MODE", "oneshot"),
             schedule_interval_hours=int(os.getenv("SCHEDULE_INTERVAL_HOURS", "6")),
             rss_max_entries=int(os.getenv("RSS_MAX_ENTRIES", "5")),
@@ -60,6 +62,8 @@ class AppConfig:
             max_retries=int(os.getenv("MAX_RETRIES", "3")),
             retry_wait_seconds=int(os.getenv("RETRY_WAIT_SECONDS", "2")),
             max_content_chars=int(os.getenv("MAX_CONTENT_CHARS", "10000")),
+            max_news_items=int(os.getenv("MAX_NEWS_ITEMS", "1000")),
+            min_web_content_chars=int(os.getenv("MIN_WEB_CONTENT_CHARS", "500")),
         )
 
 

@@ -2,17 +2,16 @@
 スクレイピングモジュール
 RSS フィードと Web ページからコンテンツを取得する
 """
+import asyncio
 import logging
 import feedparser
 from crawl4ai import AsyncWebCrawler
 from typing import List, Dict
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+from tenacity import retry, stop_after_attempt, wait_exponential
 from config import config
+from models import RSSEntry
 
 logger = logging.getLogger(__name__)
-
-# feedparser のネットワーク系エラー
-RETRIABLE_EXCEPTIONS = (Exception,)
 
 
 class Scraper:
@@ -25,12 +24,16 @@ class Scraper:
             "Chrome/91.0.4472.124 Safari/537.36"
         )
 
+    def _parse_feed_sync(self, url: str) -> dict:
+        """同期的にRSSフィードをパースするヘルパー"""
+        return feedparser.parse(url, agent=self._user_agent)
+
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_exponential(multiplier=1, min=2, max=10),
         reraise=True,
     )
-    def fetch_rss(self, url: str) -> List[Dict]:
+    async def fetch_rss(self, url: str) -> List[RSSEntry]:
         """
         RSSフィードを取得してエントリのリストを返す
 
@@ -38,10 +41,12 @@ class Scraper:
             url: RSSフィードのURL
 
         Returns:
-            エントリのリスト（タイトル、URL、要約、公開日）
+            RSSEntryのリスト
         """
         logger.info(f"RSS取得中: {url}")
-        feed = feedparser.parse(url, agent=self._user_agent)
+        
+        # 同期通信を行う feedparser.parse を別スレッドで実行してブロッキングを防ぐ
+        feed = await asyncio.to_thread(self._parse_feed_sync, url)
 
         if feed.bozo and not feed.entries:
             logger.warning(f"RSSパースエラー: {url} - {feed.bozo_exception}")
@@ -50,12 +55,12 @@ class Scraper:
         entries = []
         max_entries = config.rss_max_entries
         for entry in feed.entries[:max_entries]:
-            entries.append({
-                "title": getattr(entry, "title", "タイトル不明"),
-                "url": getattr(entry, "link", ""),
-                "summary": getattr(entry, "summary", ""),
-                "published": getattr(entry, "published", ""),
-            })
+            entries.append(RSSEntry(
+                title=getattr(entry, "title", "タイトル不明"),
+                url=getattr(entry, "link", ""),
+                summary=getattr(entry, "summary", ""),
+                published=getattr(entry, "published", ""),
+            ))
 
         logger.info(f"  → {len(entries)}件のエントリを取得")
         return entries

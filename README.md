@@ -50,19 +50,23 @@
 ```
 .
 ├── backend/
+│   ├── api.py             # API エンドポイント (FastAPI router)
 │   ├── config.py          # 設定管理（環境変数 + dotenv）
+│   ├── main.py            # FastAPI アプリ起動 & 定期実行スケジューラ
 │   ├── models.py          # Pydantic データモデル
+│   ├── pipeline.py        # スクレイピング＋要約パイプライン
+│   ├── repository.py      # データアクセス層（JSON永続化）
 │   ├── scraper.py         # RSS / Web スクレイピング
 │   ├── summarizer.py      # Gemini 要約（リトライ + レート制限）
-│   ├── main.py            # FastAPI + パイプライン統合
 │   ├── sources.json       # 情報ソース定義
 │   ├── Dockerfile
 │   └── requirements.txt
 ├── frontend/
 │   ├── app/
 │   │   ├── components/    # UI コンポーネント群
+│   │   ├── hooks/         # カスタムフック (useNews)
 │   │   ├── types/         # TypeScript 型定義
-│   │   ├── lib/           # ユーティリティ関数
+│   │   ├── lib/           # ユーティリティ関数・定数
 │   │   ├── page.tsx       # メインページ
 │   │   ├── layout.tsx     # レイアウト
 │   │   └── globals.css    # グローバルスタイル
@@ -156,7 +160,7 @@
 | 変数名 | 必須 | デフォルト | 説明 |
 |--------|------|-----------|------|
 | `GEMINI_API_KEY` | ✅ | - | Gemini API キー |
-| `GEMINI_MODEL` | - | `gemini-1.5-flash` | 使用するGeminiモデル |
+| `GEMINI_MODEL` | - | `gemini-3.1-flash-lite` | 使用するGeminiモデル |
 | `RUN_MODE` | - | `oneshot` | 実行モード（`oneshot` / `daemon`） |
 | `SCHEDULE_INTERVAL_HOURS` | - | `6` | 定期実特間隔（時間） |
 | `RSS_MAX_ENTRIES` | - | `5` | RSS最大取得件数 |
