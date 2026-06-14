@@ -40,7 +40,9 @@ class NewsRepository:
         """ニュースデータをJSONファイルに保存する（アトミック書き込み＋スレッドセーフ）"""
         tmp_file = f"{self.data_file}.tmp"
         try:
-            os.makedirs(os.path.dirname(self.data_file), exist_ok=True)
+            dir_path = os.path.dirname(self.data_file)
+            if dir_path:
+                os.makedirs(dir_path, exist_ok=True)
             # シリアライズ (Pydantic v2 の model_dump)
             data = [item.model_dump() for item in items]
             with self._lock:
